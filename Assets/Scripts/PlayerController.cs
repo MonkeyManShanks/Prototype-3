@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     public AudioClip crashSound;
     private AudioSource playerAudio;
     public AudioClip jumpSound;
+    public float upBound = 16;
+    public bool isLowEnough;
     
     // Start is called before the first frame update
     void Start()
@@ -23,13 +25,21 @@ public class PlayerController : MonoBehaviour
         Physics.gravity *= gravityModifier;
         playerAnim = GetComponent<Animator>();
         playerAudio = GetComponent<AudioSource>();
+        playerRb.AddForce(Vector3.up * 5, ForceMode.Impulse);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-        if (Input.GetKeyDown(KeyCode.Space) && isOnGround && !gameOver)
+        if (transform.position.y >= upBound)
+        {
+            isLowEnough = false;
+        }else if (transform.position.y < upBound)
+        {
+            isLowEnough=true;
+        }
+        // While space is pressed and player is low enough, float up
+        if (Input.GetKeyDown(KeyCode.Space) && isOnGround && !gameOver && isLowEnough)
         playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         isOnGround = false; 
         playerAnim.SetTrigger("Jump_trig");
